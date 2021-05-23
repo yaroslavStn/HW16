@@ -1,0 +1,11 @@
+masha | dd | +666 | 1987
+masha | cc | +444 | 1980
+petya | dd | +444 | 1981
+masha | cc | +222 | 2006
+petya | aa | +555 | 2008
+masha | dd | +444 | 2005
+jake | ee | +000 | 1999
+masha | cc | +000 | 1977
+jake | cc | +000 | 2005
+jake | ee | +333 | 1983
+masha | bb | +000 | 2003
