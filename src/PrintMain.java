@@ -30,6 +30,17 @@ public class PrintMain {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        try (PrintWriter writer = new PrintWriter(
+                new FileOutputStream("numWithComma.txt")
+        )) {
+            for (int i = 0; i < 1001; i++) {
+                int n = (int) (Math.random()*1150 - 500);
+                writer.print(n+",");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         try (PrintWriter writer = new PrintWriter(new FileOutputStream("contacts.txt"))){
             for (int i = 0; i < 11; i++) {
