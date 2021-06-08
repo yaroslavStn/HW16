@@ -6,10 +6,7 @@ import java.util.*;
 public class WriteMain {
     static int counter = 0;
 
-    public static void main() {
-        String[] args = new String[2];
-        args[0] = "d:\\торрент\\[HTML Academy] Профессиональный HTML и CSS, уровень 2\\01 Вводный\\Лекция\\Лекция 1 - Знакомство.mp4";
-        args[1] = "d:\\торрент\\[HTML Academy] Профессиональный HTML и CSS, уровень 2\\01 Вводный\\Лекция\\Лекция 21 - Знакомство.mp4";
+    public static void main(String[] args) {
 
         try {
             WriteMain.run();
@@ -24,7 +21,8 @@ public class WriteMain {
             e.printStackTrace();
         }
 
-        int fileCounter = fileCounter(new File("D:\\Java\\lesson16"));
+        int fileCounter;
+        fileCounter = fileCounter(new File("D:\\Java\\lesson16"));
 
 
     }
@@ -36,6 +34,7 @@ public class WriteMain {
             for (File f : files) {
                 fileCounter(f);
             }
+
         } else {
             counter++;
         }
@@ -228,7 +227,7 @@ public class WriteMain {
         };
 
 
-        Copy[] methods = {};
+        Copy[] methods = {buffCopy};
         //byteCopy, buffCopy, byteCopyWithBuffered, buffCopyWithBuffered
 
         for (Copy method : methods) {
@@ -236,7 +235,6 @@ public class WriteMain {
             method.copy(args);
             Instant finish = Instant.now();
             long time = Duration.between(start, finish).toMillis();
-            time /= 1000;
             System.out.println(time);
         }
     }
