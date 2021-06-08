@@ -1,16 +1,95 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilterInputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class WriteMain {
-    public static void main(String[] args) {
-        WriteMain.run();
+    static int counter = 0;
+
+    public static void main() {
+        String[] args = new String[2];
+        args[0] = "d:\\торрент\\[HTML Academy] Профессиональный HTML и CSS, уровень 2\\01 Вводный\\Лекция\\Лекция 1 - Знакомство.mp4";
+        args[1] = "d:\\торрент\\[HTML Academy] Профессиональный HTML и CSS, уровень 2\\01 Вводный\\Лекция\\Лекция 21 - Знакомство.mp4";
+
+        try {
+            WriteMain.run();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        WriteMain copyMain = new WriteMain();
+        try {
+            copyMain.copy(args);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int fileCounter = fileCounter(new File("D:\\Java\\lesson16"));
+
+
     }
 
-    private static void run() {
-        try (Scanner scanner = new Scanner(
+    private static int fileCounter(File file) {
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                fileCounter(f);
+            }
+        } else {
+            counter++;
+        }
+        return counter;
+    }
+
+    private static void run() throws IOException, ClassNotFoundException {
+        try (DataInputStream inputStream = new DataInputStream(
+                new FileInputStream("data.bin")
+        )) {
+            /*byte [] bytes = new byte[4];
+            inputStream.read(bytes,0,4);
+            ByteBuffer wrapped = ByteBuffer.wrap(bytes);
+            int i = wrapped.getInt();*/
+            int i = inputStream.readInt();
+            String s = inputStream.readUTF();
+            double d = inputStream.readDouble();
+            float f = inputStream.readFloat();
+        }
+
+        try (DataInputStream inputStream = new DataInputStream(
+                new FileInputStream("Strings.bin")
+        )) {
+            Collection<String> collection = new ArrayList<>();
+            int size = inputStream.readInt();
+            for (int i = 0; i < size; i++) {
+                String s = inputStream.readUTF();
+                collection.add(s);
+            }
+        }
+        List<Contact> contacts = new ArrayList<>();
+        try (DataInputStream inputStream = new DataInputStream(
+                new FileInputStream("Contacts.bin")
+        )) {
+            int size = inputStream.readInt();
+            for (int i = 0; i < size; i++) {
+                String name = inputStream.readUTF();
+                String surName = inputStream.readUTF();
+                String phone = inputStream.readUTF();
+                int year = inputStream.readInt();
+                contacts.add(new Contact(name, surName, phone, year));
+            }
+        }
+        contacts.clear();
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("ContactsObj.bin"))) {
+            int size = inputStream.readInt();
+            for (int i = 0; i < size; i++) {
+                Contact contact = (Contact) inputStream.readObject();
+                contacts.add(contact);
+            }
+        }
+
+
+        /*try (Scanner scanner = new Scanner(
                 new FileInputStream("num.txt"), StandardCharsets.UTF_8.name())) {
             int counter = 0;
             int sum = 0;
@@ -79,6 +158,86 @@ public class WriteMain {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+*/
+    }
 
+    private void copy(String[] args) throws IOException {
+
+        Copy byteCopy = new Copy() {
+            @Override
+            public void copy(String[] args) throws IOException {
+                try (InputStream source = new FileInputStream(args[0]);
+                     OutputStream destination = new FileOutputStream(args[1])) {
+                    while (true) {
+                        int read = source.read();
+                        if (read == -1) break;
+                        destination.write(read);
+                    }
+                }
+            }
+
+        };
+
+
+        Copy buffCopy = new Copy() {
+            @Override
+            public void copy(String[] args) throws IOException {
+
+                try (InputStream source = new FileInputStream(args[0]);
+                     OutputStream destination = new FileOutputStream(args[1])) {
+                    byte[] buffer = new byte[4000];
+                    int lengthRead;
+                    while ((lengthRead = source.read(buffer)) > 0) {
+                        destination.write(buffer, 0, lengthRead);
+                        destination.flush();
+                    }
+                }
+
+            }
+        };
+        Copy byteCopyWithBuffered = new Copy() {
+            @Override
+            public void copy(String[] args) throws IOException {
+                try (InputStream source = new BufferedInputStream(new FileInputStream(args[0]), 4000);
+                     OutputStream destination = new BufferedOutputStream(new FileOutputStream(args[1]), 4000)) {
+                    while (true) {
+                        int read = source.read();
+                        if (read == -1) break;
+                        destination.write(read);
+                    }
+                }
+            }
+
+        };
+
+        Copy buffCopyWithBuffered = new Copy() {
+            @Override
+            public void copy(String[] args) throws IOException {
+                try (InputStream source = new BufferedInputStream(new FileInputStream(args[0]), 4000);
+                     OutputStream destination = new BufferedOutputStream(new FileOutputStream(args[1]), 4000)) {
+                    byte[] buff = new byte[4000];
+
+                    while (source.available() > 0) {
+                        int read = source.read(buff);
+                        if (read == -1) break;
+                        destination.write(buff);
+                        destination.flush();
+                    }
+                }
+            }
+        };
+
+
+        Copy[] methods = {};
+        //byteCopy, buffCopy, byteCopyWithBuffered, buffCopyWithBuffered
+
+        for (Copy method : methods) {
+            Instant start = Instant.now();
+            method.copy(args);
+            Instant finish = Instant.now();
+            long time = Duration.between(start, finish).toMillis();
+            time /= 1000;
+            System.out.println(time);
+        }
     }
 }

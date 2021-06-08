@@ -11,4 +11,8 @@ public class Factory {
         return new Contact(name,surname,phoneNumber,year);
     }
 
+    public String newString (){
+        return names[(int) (Math.random()*names.length)];
+    }
+
 }
